@@ -83,6 +83,9 @@
   oc get all --selector app=jenkins
   # delete all
   oc delete all --selector app=jenkins
+  # delete pv
+  oc delete pv $PROJECT_NAME-jenkins-data
+  oc delete pv $PROJECT_NAME-jenkins-maven-repository
   ```
 	
   ## 3. GOGS Installation(persistent)
@@ -130,6 +133,9 @@
   oc get all --selector app=gogs
   # delete all
   oc delete all --selector app=gogs
+  # delete pv
+  oc delete pv $PROJECT_NAME-gogs-data
+  oc delete pv $PROJECT_NAME-gogs-postgres-data
   ```
 
   ## 4. Sonarqube Installation(persistent)
@@ -170,6 +176,9 @@
   oc get all --selector app=sonarqube
   # delete all
   oc delete all --selector app=sonarqube
+  # delete pv
+  oc delete pv $PROJECT_NAME-sonarqube-data
+  oc delete pv $PROJECT_NAME-sonarqube-postgres-data
   ```
 	
   ## 5. Nexus Installation(persistent)
@@ -206,4 +215,6 @@
   oc get all --selector app=nexus
   # delete all
   oc delete all --selector app=nexus
+  # delete pv
+  oc delete pv $PROJECT_NAME-nexus-data
   ```
