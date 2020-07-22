@@ -208,7 +208,7 @@
   exportfs -r
   ```
 
-  5-2. Nexus Install.	
+  5-2. Nexus Install. (If password is not match, see /nexus-data/admin.password)
   ```shell
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
