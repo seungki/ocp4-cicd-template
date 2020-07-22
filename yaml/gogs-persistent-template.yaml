@@ -38,7 +38,7 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
-    name: gogs-postgres-data
+    name: ${GOGS_SERVICE_NAME}-postgres-data
     labels:
       app: ${GOGS_SERVICE_NAME}
   spec:
@@ -52,7 +52,7 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
-    name: gogs-data
+    name: ${GOGS_SERVICE_NAME}-data
     labels:
       app: ${GOGS_SERVICE_NAME}
   spec:
@@ -130,7 +130,7 @@ objects:
         volumes:
         - name: gogs-postgres-data
           persistentVolumeClaim:
-            claimName: gogs-postgres-data
+            claimName: ${GOGS_SERVICE_NAME}-postgres-data
     triggers:
     - imageChangeParams:
         automatic: true
@@ -216,7 +216,7 @@ objects:
         volumes:
         - name: gogs-data
           persistentVolumeClaim:
-            claimName: gogs-data
+            claimName: ${GOGS_SERVICE_NAME}-data
         - name: gogs-config
           configMap:
             name: gogs-config
