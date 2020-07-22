@@ -46,7 +46,7 @@
   -->
 
 
-  ## 2. Jenkins 설치(persistent)
+  ## 2. Jenkins Installation(persistent)
 	
   2-1. [Manually] Jenkins PersistentVolume 생성을 위한 준비작업 (jenkins data , maven repository)
   
@@ -64,7 +64,7 @@
   # exports 적용
   exportfs -r
   ```
-  2-2. Jenkins 설치.
+  2-2. Jenkins Install.
   ```shell
   # [참고]Jenkins persistent openshift image 로 설치.
   # oc new-app jenkins-persistent -n $PROJECT_NAME
@@ -77,13 +77,15 @@
     --param=JENKINS_MAVEN_REPO=/shared/$PROJECT_NAME/jenkins-maven-repository \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
-  ※ Delete PV.
+  ※ Jenkins Delete.
   ```shell
-  oc delete pv $PROJECT_NAME-jenkins-data
-  oc delete pv $PROJECT_NAME-jenkins-maven-repository
+  # check list
+  oc get all --selector app=jenkins
+  # delete all
+  oc delete all --selector app=jenkins
   ```
 	
-  ## 3. GOGS 설치(persistent)
+  ## 3. GOGS Installation(persistent)
 
   3-1. [Manually] Gogs PersistentVolume 생성을 위한 준비작업 (gogs data , gogs postgresql)
   - ※ gogs 설치 후 volume mount 실패시 directory nfsnobody:nfsnobody 로 owner 변경.
@@ -103,7 +105,7 @@
   exportfs -r	
   ```
 
-  3-2. Gogs 설치.	
+  3-2. Gogs Install.	
   ```shell
   # Get HOSTNAME from Jenkins
   HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
@@ -122,13 +124,15 @@
     --param=GOGS_DATA_DIRECTORY=/shared/$PROJECT_NAME/gogs-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
-  ※ Delete PV.
+  ※ Gogs Delete.
   ```shell
-  oc delete pv $PROJECT_NAME-gogs-data
-  oc delete pv $PROJECT_NAME-gogs-postgres-data
+  # check list
+  oc get all --selector app=gogs
+  # delete all
+  oc delete all --selector app=gogs
   ```
 
-  ## 4. Sonarqube 설치(persistent)
+  ## 4. Sonarqube Installation(persistent)
 	
   4-1. [Manually] Sonarqube PersistentVolume 생성을 위한 준비작업 (sonarqube data, sonarqube postgresql)
   
@@ -147,7 +151,7 @@
   exportfs -r	
   ```
 
-  4-2. Sosnarqube 설치.	
+  4-2. Sonarqube Install.	
   ```shell
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
@@ -160,13 +164,15 @@
     --param=SONAR_DATA_DIRECTORY=/shared/$PROJECT_NAME/sonarqube-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
-  ※ Delete PV.
+  ※ Sonarqube Delete.
   ```shell
-  oc delete pv $PROJECT_NAME-sonarqube-data
-  oc delete pv $PROJECT_NAME-sonarqube-postgres-data
+  # check list
+  oc get all --selector app=sonarqube
+  # delete all
+  oc delete all --selector app=sonarqube
   ```
 	
-  ## 5. Nexus 설치(persistent)
+  ## 5. Nexus Installation(persistent)
 
   5-1. [Manually] Nexus PersistentVolume 생성을 위한 준비작업 
   - Nexus data 를 위한 1개의 PV 생성
@@ -182,7 +188,7 @@
   exportfs -r
   ```
 
-  5-2. Nexus 설치.	
+  5-2. Nexus Install.	
   ```shell
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
@@ -194,7 +200,10 @@
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
 
-  ※ Delete PV.
+  ※ Nexus Delete.
   ```shell
-  oc delete pv $PROJECT_NAME-nexus-data
+  # check list
+  oc get all --selector app=nexus
+  # delete all
+  oc delete all --selector app=nexus
   ```
