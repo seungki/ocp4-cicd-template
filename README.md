@@ -72,7 +72,7 @@
   # Jenkins persistent template 으로 설치.
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
   oc new-app -f ./yaml/jenkins-persistent-template.yaml \
-    --param=PROJECT_NAME=$PROJECT_NAME
+    --param=PROJECT_NAME=$PROJECT_NAME \
     --param=JENKINS_DATA_DIRECTORY=/shared/$PROJECT_NAME/jenkins-data \
     --param=JENKINS_MAVEN_REPO=/shared/$PROJECT_NAME/jenkins-maven-repository \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
