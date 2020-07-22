@@ -77,6 +77,11 @@
     --param=JENKINS_MAVEN_REPO=/shared/$PROJECT_NAME/jenkins-maven-repository \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
+  ※ Delete PV.
+  ```shell
+  oc delete pv $PROJECT_NAME-jenkins-data
+  oc delete pv $PROJECT_NAME-jenkins-maven-repository
+  ```
 	
   ## 3. GOGS 설치(persistent)
 
@@ -113,7 +118,12 @@
     --param=GOGS_DATA_DIRECTORY=/shared/$PROJECT_NAME/gogs-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
-	
+  ※ Delete PV.
+  ```shell
+  oc delete pv $PROJECT_NAME-gogs-data
+  oc delete pv $PROJECT_NAME-gogs-postgres-data
+  ```
+
   ## 4. Sonarqube 설치(persistent)
 	
   4-1. [Manually] Sonarqube PersistentVolume 생성을 위한 준비작업 (sonarqube data, sonarqube postgresql)
@@ -143,7 +153,11 @@
     --param=SONAR_DATA_DIRECTORY=/shared/$PROJECT_NAME/sonarqube-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
   ```
-	
+  ※ Delete PV.
+  ```shell
+  oc delete pv $PROJECT_NAME-sonarqube-data
+  oc delete pv $PROJECT_NAME-sonarqube-postgres-data
+  ```
 	
   ## 5. Nexus 설치(persistent)
 
@@ -168,6 +182,9 @@
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=NEXUS_DATA_DIRECTORY=/shared/$PROJECT_NAME/nexus-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
-  ```	
-	
-	
+  ```
+
+  ※ Delete PV.
+  ```shell
+  oc delete pv $PROJECT_NAME-nexus-data
+  ```
