@@ -31,8 +31,10 @@
 	
   ```shell
   # Project 생성
+  PROJECT_NAME=cicd-test
   oc new-project $PROJECT_NAME --display-name="CI/CD"
-	
+  oc project $PROJECT_NAME
+
   # Jenkins 접근권한 부여
   oc policy add-role-to-group edit system:serviceaccounts:$PROJECT_NAME -n $PROJECT_NAME
 	
