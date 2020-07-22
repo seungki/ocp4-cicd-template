@@ -18,7 +18,7 @@
     </tr>
     <tr>
         <td>Nexus</td>
-        <td>3.13.0</td>
+        <td>3.25.0</td>
     </tr>
     <tr>
         <td>Sonarqube</td>
