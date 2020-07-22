@@ -86,6 +86,7 @@
   ## 3. GOGS 설치(persistent)
 
   3-1. [Manually] Gogs PersistentVolume 생성을 위한 준비작업 (gogs data , gogs postgresql)
+  - ※ gogs 설치 후 volume mount 실패시 directory nfsnobody:nfsnobody 로 owner 변경.
   
   ```shell
   # data directory 생성.
