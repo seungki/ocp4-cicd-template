@@ -233,15 +233,43 @@
 	
   ## 6. Set Jenkins pipeline
   
-  6-1. Create new project for application
+  6-1. Create Jenkins pipeline
   ```shell
-  DEV_PROJECT_NAME=app-test
-  oc new-project $DEV_PROJECT_NAME --display-name="Test Application"
+  # Get HOSTNAME from Jenkins
+  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
+  GOGS_HOSTNAME="gogs-$PROJECT_NAME.$HOSTNAME"
+  # set dev application project name
+  DEV_PROJECT_NAME=test-cicd-app
+	
+  oc new-app -f ./yaml/jenkins-pipeline.yaml \
+    --param=PROJECT_NAME=$PROJECT_NAME \
+    --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
+    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME 	
+	
+  ```
+	
+  ## 7. Create Sample Application	
+  7-1. Create new project for application
+  ```shell
+  DEV_PROJECT_NAME=test-cicd-app
+  oc new-project $DEV_PROJECT_NAME --display-name="Test Application for CI/CD"
   oc project $DEV_PROJECT_NAME
-
   
   ```
-  6-2. clone simple application to GOGS
+
+  7-2. Clone simple application to GOGS
   ![alt text](images/gogs-migration.png)
   
-  6-3. 
+  7-3. Create Sample Application
+  ```shell
+  # set dev application project name
+  DEV_PROJECT_NAME=test-cicd-app
+  APP_NAME=simple-springboot
+	
+  # create application & build & deployconfig
+  oc new-app -f ./yaml/simple-springboot-template.yaml \
+    --param=PROJECT_NAME=$PROJECT_NAME \
+    --param=APP_NAME=$APP_NAME 	
+	
+  ```
+	

@@ -194,3 +194,7 @@ parameters:
       description:  IP Address of PersistentVolume
       value: 192.168.138.12   
     - name: PROJECT_NAME
+      displayName: Project Name
+      description:  Project Name 
+      value: cicd-sample    
+    

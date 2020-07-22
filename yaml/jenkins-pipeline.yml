@@ -8,6 +8,7 @@ metadata:
     iconClass: icon-jenkins
     tags: jenkins,cicd
   name: jenkins-pipeline
+  namespace: ${PROJECT_NAME}
 #RoleBinding  
 objects:
 - kind: RoleBinding
@@ -111,12 +112,7 @@ objects:
     name: tasks-pipeline
   spec:
     triggers:
-      - type: GitHub
-        github:
-          secret: ${WEBHOOK_SECRET}
-      - type: Generic
-        generic:
-          secret: ${WEBHOOK_SECRET}
+      - type: ConfigChange
     runPolicy: Serial
     source:
       type: None
@@ -124,10 +120,9 @@ objects:
       jenkinsPipelineStrategy:
         env:
         - name: DEV_PROJECT
-          value: ${DEV_PROJECT}
+          value: ${DEV_PROJECT_NAME}
         jenkinsfile: |-
           def mvnCmd = "mvn"
-
           pipeline {
             agent {
               label 'maven'
@@ -135,7 +130,7 @@ objects:
             stages {
               stage('Build App') {
                 steps {
-                  git branch: 'master', credentialsId: '9e4fd053-45d9-4462-a3df-6c9358735a98', url: 'http://demo-gogs-demo-infra-dev.apps.ocp4.northstar.co.kr/ocp-group/front.git'                  
+                  git branch: 'master', credentialsId: 'XXXXXXXX', url: 'http://${GOGS_HOSTNAME}/simple-springboot.git'
                   sh "${mvnCmd} install -DskipTests=true"
                 }
               }
@@ -148,11 +143,26 @@ objects:
               }
               stage('Build Image') {
                 steps {
-                  sh "cp target/openshift-tasks.war target/ROOT.war"
+                  sh "cp target/simple-springboot-0.0.1-SNAPSHOT.jar target/ROOT.jar"
                   script {
                     openshift.withCluster() {
                       openshift.withProject(env.DEV_PROJECT) {
-                        openshift.selector("bc", "tasks").startBuild("--from-file=target/ROOT.war", "--wait=true")
+                        openshift.selector("bc", "simple-springboot").startBuild("--from-file=target/ROOT.jar", "--wait=true")
+                      }
+                    }
+                  }
+                }
+              }
+              stage('Tagging'){
+                steps {
+                  script {
+                    def gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                    gitCommitHash = gitCommitHash.substring(0,10)
+                    sh "echo ${gitCommitHash}"
+
+                    openshift.withCluster() {
+                      openshift.withProject(env.DEV_PROJECT) {
+                        openshift.tag( "simple-springboot:latest", "simple-springboot:${gitCommitHash}")
                       }
                     }
                   }
@@ -163,13 +173,25 @@ objects:
                   script {
                     openshift.withCluster() {
                       openshift.withProject(env.DEV_PROJECT) {
-                        openshift.selector("dc", "tasks").rollout().latest();
+                        openshift.selector("dc", "simple-springboot").rollout().latest();
                       }
                     }
                   }
                 }
-              }
+              }          
 
             }
           }
       type: JenkinsPipeline
+parameters:
+    - name: PROJECT_NAME
+      displayName: Project Name
+      description:  Project Name 
+      value: cicd-sample
+    - name: GOGS_HOSTNAME
+      displayName: Gogs hostname
+      description:  Gogs hostname 
+    - name: DEV_PROJECT_NAME
+      displayName: DEV App Project Name
+      description: DEV App Project Name 
+      value: test-cicd-app        
