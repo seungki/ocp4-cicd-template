@@ -24,7 +24,7 @@ objects:
     name: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-data
   spec:
     capacity:
-      storage: 1Gi
+      storage: 5Gi
     accessModes:
     - ReadWriteOnce
     nfs:
