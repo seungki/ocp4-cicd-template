@@ -7,7 +7,7 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
-    name: ${PROJECT_NAME}-sonarqube-postgres-data
+    name: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-postgres-data
   spec:
     capacity:
       storage: 5Gi
@@ -21,7 +21,7 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
-    name: ${PROJECT_NAME}-sonarqube-data
+    name: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-data
   spec:
     capacity:
       storage: 1Gi
@@ -38,14 +38,14 @@ objects:
     labels:
       app: sonarqube
       template: postgresql-persistent-template
-    name: sonardb
+    name: sonar-postgres-data
   spec:
     accessModes:
     - ReadWriteOnce
     resources:
       requests:
         storage: ${POSTGRES_PERSISTENT_VOLUME_CLAIM_SIZE}
-    volumeName: ${PROJECT_NAME}-sonarqube-postgres-data
+    volumeName: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-postgres-data
 #PersistentVolume Sonarqube
 - kind: PersistentVolumeClaim
   apiVersion: v1
@@ -57,7 +57,7 @@ objects:
     resources:
       requests:
         storage: ${SONARQUBE_PERSISTENT_VOLUME_SIZE}
-    volumeName: ${PROJECT_NAME}-sonarqube-data
+    volumeName: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-data
 #DeploymentConfig Sonarqube Postgresql    
 - kind: DeploymentConfig
   apiVersion: v1
@@ -147,7 +147,7 @@ objects:
         volumes:
         - name: sonardb-data
           persistentVolumeClaim:
-            claimName: sonardb
+            claimName: sonar-postgres-data
     test: false
     triggers:
     - imageChangeParams:
@@ -398,6 +398,10 @@ objects:
       weight: 100
     wildcardPolicy: None
 parameters:
+    - name: SONAR_SERVICE_NAME
+      displayName: Sonarqube service name
+      required: true
+      value: sonarqube
     - name: POSTGRES_PASSWORD
       displayName: Postgres password
       description: Password for the Posgres Database to be used by Sonarqube

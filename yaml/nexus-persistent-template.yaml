@@ -111,15 +111,15 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /nexus-data
-            name: ${NEXUS_SERVICE_NAME}-data
+            name: nexus-data
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: ${NEXUS_SERVICE_NAME}-data
+        - name: nexus-data
           persistentVolumeClaim:
-            claimName: ${NEXUS_SERVICE_NAME}-pv
+            claimName: nexus-data
     test: false
     triggers:
     - type: ConfigChange
