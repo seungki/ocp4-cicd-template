@@ -1,0 +1,192 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: nexus
+  annotations:
+    description: Sonatype Nexus 3 persistent template
+    tags: ci,nexus
+objects:
+#PersistentVolume Nexus
+- kind: PersistentVolume
+  apiVersion: v1
+  metadata:
+    name: ${PROJECT_NAME}-nexus-data
+  spec:
+    capacity:
+      storage: 1Gi
+    accessModes:
+    - ReadWriteOnce
+    nfs:
+      path: ${NEXUS_DATA_DIRECTORY}
+      server: ${PERSISTENT_VOLUME_IP}
+    persistentVolumeReclaimPolicy: Retain  
+#PersistentVolumeClaim Nexus
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: nexus-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+    volumeName: ${PROJECT_NAME}-nexus-data
+#ImageStream Nexus
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}
+    name: ${NEXUS_SERVICE_NAME}
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: docker.io/sonatype/nexus3:${NEXUS_VERSION}
+      name: ${NEXUS_VERSION}
+#DeploymentConfig Nexus
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}
+    name: ${NEXUS_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: ${NEXUS_SERVICE_NAME}
+    strategy:
+      recreateParams:
+        timeoutSeconds: 1200
+        post:
+          failurePolicy: Abort
+          execNewPod:
+            containerName: ${NEXUS_SERVICE_NAME}
+            command:
+              - "/bin/bash"
+              - "-c"
+              - "curl -o /tmp/nexus-functions -s https://raw.githubusercontent.com/OpenShiftDemos/nexus/master/scripts/nexus-functions; source /tmp/nexus-functions; add_nexus3_redhat_repos admin admin123 http://${NEXUS_SERVICE_NAME}:8081"
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          deploymentconfig: ${NEXUS_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: CONTEXT_PATH
+            value: /
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+              - echo
+              - ok
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: ${NEXUS_SERVICE_NAME}
+          ports:
+          - containerPort: 8081
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MAX_MEMORY}
+            requests:
+              memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /nexus-data
+            name: ${NEXUS_SERVICE_NAME}-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: ${NEXUS_SERVICE_NAME}-data
+          persistentVolumeClaim:
+            claimName: ${NEXUS_SERVICE_NAME}-pv
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${NEXUS_SERVICE_NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${NEXUS_SERVICE_NAME}:${NEXUS_VERSION}
+      type: ImageChange
+#Service Nexus
+- kind: Service
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}
+    name: ${NEXUS_SERVICE_NAME}
+  spec:
+    ports:
+    - name: 8081-tcp
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      deploymentconfig: ${NEXUS_SERVICE_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+#Route Nexus
+- kind: Route
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}
+    name: ${NEXUS_SERVICE_NAME}
+  spec:
+    port:
+      targetPort: 8081-tcp
+    to:
+      kind: Service
+      name: ${NEXUS_SERVICE_NAME}
+      weight: 100
+parameters:
+    - name: NEXUS_SERVICE_NAME
+      displayName: Sonatype Nexus service name
+      required: true
+      value: nexus
+    - name: NEXUS_VERSION
+      displayName: Sonatype Nexus version
+      required: true
+      value: 3.6.0
+    - name: VOLUME_CAPACITY
+      displayName: Volume Space for Nexus
+      description: Volume space available for Sonatype Nexus e.g. 512Mi, 2Gi
+      required: true
+      value: 2Gi
+    - name: MAX_MEMORY
+      displayName: Max Memory
+      description: Max memory allocated to the Nexus pod
+      required: true
+      value: 1Gi
+    - name: NEXUS_DATA_DIRECTORY
+      displayName: Nexus data directory
+      description:  PersistentVolume for Sonarqube data directory
+      value: /shared/cicd-sample/nexus-data  
+    - name: PERSISTENT_VOLUME_IP
+      displayName: PersistentVolume IP Address
+      description:  IP Address of PersistentVolume
+      value: 192.168.138.12   
+    - name: PROJECT_NAME

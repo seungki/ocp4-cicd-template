@@ -1,0 +1,275 @@
+kind: Template
+apiVersion: v1
+metadata:
+  annotations:
+    description: Jenkins service with persistent storage. (https://docs.okd.io/latest/using_images/other_images/jenkins.html)
+    tags: instant-app,jenkins
+  name: jenkins
+objects:
+#PersistentVolume jenkins-data
+- kind: PersistentVolume
+  apiVersion: v1
+  metadata:
+    name: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-data
+  spec:
+    capacity:
+      storage: 1Gi
+    accessModes:
+    - ReadWriteOnce
+    nfs:
+      path: ${JENKINS_DATA_DIRECTORY}
+      server: ${PERSISTENT_VOLUME_IP}
+    persistentVolumeReclaimPolicy: Retain
+#PersistentVolume jenkins-maven-repository
+- kind: PersistentVolume
+  apiVersion: v1
+  metadata:
+    name: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-maven-repository
+  spec:
+    capacity:
+      storage: 1Gi
+    accessModes:
+    - ReadWriteOnce
+    nfs:
+      path: ${JENKINS_MAVEN_REPO}
+      server: ${PERSISTENT_VOLUME_IP}
+    persistentVolumeReclaimPolicy: Retain
+#PersistentVolumeClaim jenkins-data
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: ${JENKINS_SERVICE_NAME}-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+    volumeName: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-data    
+#PersistentVolumeClaim jenkins-maven-repository
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: ${JENKINS_SERVICE_NAME}-maven-repository
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+    volumeName: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-maven-repository
+#DeploymentConfig Jenkins 
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: 'true'
+    name: "${JENKINS_SERVICE_NAME}"
+  spec:
+    replicas: 1
+    selector:
+      name: "${JENKINS_SERVICE_NAME}"
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: "${JENKINS_SERVICE_NAME}"
+      spec:
+        containers:
+        - capabilities: {}
+          env:
+          - name: OPENSHIFT_ENABLE_OAUTH
+            value: "${ENABLE_OAUTH}"
+          - name: OPENSHIFT_ENABLE_REDIRECT_PROMPT
+            value: 'true'
+          - name: DISABLE_ADMINISTRATIVE_MONITORS
+            value: "${DISABLE_ADMINISTRATIVE_MONITORS}"
+          - name: KUBERNETES_MASTER
+            value: https://kubernetes.default:443
+          - name: KUBERNETES_TRUST_CERTIFICATES
+            value: 'true'
+          - name: JENKINS_SERVICE_NAME
+            value: "${JENKINS_SERVICE_NAME}"
+          - name: JNLP_SERVICE_NAME
+            value: "${JNLP_SERVICE_NAME}"
+          - name: ENABLE_FATAL_ERROR_LOG_FILE
+            value: "${ENABLE_FATAL_ERROR_LOG_FILE}"
+          - name: JENKINS_UC_INSECURE
+            value: 'false'
+          - name: JENKINS_JAVA_OVERRIDES
+            value: '-Dhudson.slaves.NodeProvisioner.initialDelay=0'
+          - name: JENKINS_JAVA_OVERRIDES
+            value: '-Dhudson.slaves.NodeProvisioner.MARGIN=50'
+          - name: JENKINS_JAVA_OVERRIDES
+            value: '-Dhudson.slaves.NodeProvisioner.MARGIN0=0.85'            
+          image: " "
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            timeoutSeconds: 240
+          name: jenkins
+          readinessProbe:
+            httpGet:
+              path: "/login"
+              port: 8080
+            initialDelaySeconds: 3
+            timeoutSeconds: 240
+          resources:
+            limits:
+              memory: "${MEMORY_LIMIT}"
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: "/dev/termination-log"
+          volumeMounts:
+          - mountPath: "/var/lib/jenkins"
+            name: "${JENKINS_SERVICE_NAME}-data"
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        serviceAccountName: "${JENKINS_SERVICE_NAME}"
+        volumes:
+        - name: "${JENKINS_SERVICE_NAME}-data"
+          persistentVolumeClaim:
+            claimName: "${JENKINS_SERVICE_NAME}"
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - jenkins
+        from:
+          kind: ImageStreamTag
+          name: "${JENKINS_IMAGE_STREAM_TAG}"
+          namespace: "${NAMESPACE}"
+        lastTriggeredImage: ''
+      type: ImageChange
+    - type: ConfigChange
+#ServiceAccount
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${JENKINS_SERVICE_NAME}"}}'
+    name: "${JENKINS_SERVICE_NAME}"
+#RoleBinding
+- kind: RoleBinding
+  apiVersion: v1
+  groupNames: 
+  metadata:
+    name: "${JENKINS_SERVICE_NAME}_edit"
+  roleRef:
+    name: edit
+  subjects:
+  - kind: ServiceAccount
+    name: "${JENKINS_SERVICE_NAME}"
+#Service JNLP
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${JNLP_SERVICE_NAME}"
+  spec:
+    ports:
+    - name: agent
+      nodePort: 0
+      port: 50000
+      protocol: TCP
+      targetPort: 50000
+    selector:
+      name: "${JENKINS_SERVICE_NAME}"
+    sessionAffinity: None
+    type: ClusterIP
+#Service Jenkins 
+- kind: Service
+  apiVersion: v1
+  metadata:
+    annotations:
+      service.alpha.openshift.io/dependencies: '[{"name": "${JNLP_SERVICE_NAME}",
+        "namespace": "", "kind": "Service"}]'
+      service.openshift.io/infrastructure: 'true'
+    name: "${JENKINS_SERVICE_NAME}"
+  spec:
+    ports:
+    - name: web
+      nodePort: 0
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      name: "${JENKINS_SERVICE_NAME}"
+    sessionAffinity: None
+    type: ClusterIP
+#Route Jenkins 
+- kind: Route
+  apiVersion: v1
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/timeout: 4m
+      template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
+    name: "${JENKINS_SERVICE_NAME}"
+  spec:
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: edge
+    to:
+      kind: Service
+      name: "${JENKINS_SERVICE_NAME}"
+parameters:
+    - name: JENKINS_SERVICE_NAME
+      displayName: Jenkins Service Name
+      description: The name of the OpenShift Service exposed for the Jenkins container.
+      value: jenkins
+    - name: JNLP_SERVICE_NAME
+      displayName: Jenkins JNLP Service Name
+      description: The name of the service used for master/slave communication.
+      value: jenkins-jnlp
+    - name: ENABLE_OAUTH
+      displayName: Enable OAuth in Jenkins
+      description: Whether to enable OAuth OpenShift integration. If false, the static account 'admin' will be initialized with the password 'password'.
+      value: 'true'
+    - name: MEMORY_LIMIT
+      displayName: Memory Limit
+      description: Maximum amount of memory the container can use.
+      value: 512Mi
+    - name: VOLUME_CAPACITY
+      displayName: Volume Capacity
+      description: Volume space available for data, e.g. 512Mi, 2Gi.
+      required: true
+      value: 1Gi
+    - name: NAMESPACE
+      displayName: Jenkins ImageStream Namespace
+      description: The OpenShift Namespace where the Jenkins ImageStream resides.
+      value: openshift
+    - name: DISABLE_ADMINISTRATIVE_MONITORS
+      displayName: Disable memory intensive administrative monitors
+      description: Whether to perform memory intensive, possibly slow, synchronization with the Jenkins Update Center on start.  If true, the Jenkins core update monitor and site warnings monitor are disabled.
+      value: 'false'
+    - name: JENKINS_IMAGE_STREAM_TAG
+      displayName: Jenkins ImageStreamTag
+      description: Name of the ImageStreamTag to be used for the Jenkins image.
+      value: jenkins:2
+    - name: ENABLE_FATAL_ERROR_LOG_FILE
+      displayName: Fatal Error Log File
+      description: When a fatal error occurs, an error log is created with information and the state obtained at the time of the fatal error.
+      value: 'false'
+    - name: JENKINS_DATA_DIRECTORY
+      displayName: Jenkins data directory
+      description:  PersistentVolume for Jenkins data directory
+      value: /shared/cicd-sample/jenkins-data
+    - name: JENKINS_MAVEN_REPO
+      displayName: Jenkins Maven Repository directory
+      description:  PersistentVolume for Jenkins Maven Repository directory
+      value: /shared/cicd-sample/jenkins-maven-repository
+    - name: PERSISTENT_VOLUME_IP
+      displayName: PersistentVolume IP Address
+      description:  IP Address of PersistentVolume
+      value: 192.168.138.12   
+    - name: PROJECT_NAME
+      displayName: Project Name
+      description:  Project Name 
+      value: cicd-sample  
+      
