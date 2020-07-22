@@ -34,8 +34,8 @@
   PROJECT_NAME=cicd-test
   oc new-project $PROJECT_NAME --display-name="CI/CD"
   oc project $PROJECT_NAME
-
-  # Jenkins 접근권한 부여
+  ```  
+  <!-- # Jenkins 접근권한 부여 
   oc policy add-role-to-group edit system:serviceaccounts:$PROJECT_NAME -n $PROJECT_NAME
 	
   # project 에 admin roll 부여[ocp admin 계정만 실행가능]
@@ -43,18 +43,19 @@
 	
   # pod-network 에 project 추가[ocp admin 계정만 실행가능]
   oc adm pod-network join-projects --to=$PROJECT_NAME >/dev/null 2>&1
-  ```  
-	
+  -->
+
+
   ## 2. Jenkins 설치(persistent)
 	
   2-1. [Manually] Jenkins PersistentVolume 생성을 위한 준비작업 (jenkins data , maven repository)
   
   ```shell
   # data directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-data
 
   # maven repository directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-maven-repository
+  mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-maven-repository
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/jenkins-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
@@ -83,10 +84,10 @@
   
   ```shell
   # data directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-data
 
   # postgresql directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-postgres-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-postgres-data
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/gogs-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
@@ -119,10 +120,10 @@
   
   ```shell
   # data directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-data
 
   # postgresql directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-postgres-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-postgres-data
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/sonarqube-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
@@ -151,7 +152,7 @@
   
   ```shell
   # data directory 생성.
-  mkdir mkdir -m 777 -p /shared/$PROJECT_NAME/nexus-data
+  mkdir -m 777 -p /shared/$PROJECT_NAME/nexus-data
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/nexus-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
