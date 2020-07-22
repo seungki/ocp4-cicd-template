@@ -1,7 +1,7 @@
 # CI/CD Persistent - OpenShift Container Platform 4.3
   ref : https://github.com/siamaksade/openshift-cd-demo/
 
-  설치되는 항목.
+  Install items.
   <table>
     <tbody>
     <tr>
@@ -35,14 +35,14 @@
   
   ## 0. Prepare CI/CD template YAML file download
   ```shell
-  # git clone
+  # Clone git to your installation directory
   git clone https://github.com/seungki/ocp4-cicd-template.git
   ```
 
-  ## 1. CI/CD Project 생성
+  ## 1. CI/CD Project
 	
   ```shell
-  # Project 생성
+  # Create Project
   PROJECT_NAME=cicd-test
   oc new-project $PROJECT_NAME --display-name="CI/CD"
   oc project $PROJECT_NAME
@@ -60,28 +60,28 @@
 
   ## 2. Jenkins Installation(persistent)
 	
-  2-1. [Manually] Jenkins PersistentVolume 생성을 위한 준비작업 (jenkins data , maven repository)
+  2-1. [Manually] Jenkins PersistentVolume  (jenkins data , maven repository)
   
   ```shell
-  # data directory 생성.
+  # Create data directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-data
 
-  # maven repository directory 생성.
+  # Create maven repository directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/jenkins-maven-repository
 
-  # /etc/exports 에 추가
+  # Add to /etc/exports 
   /shared/$PROJECT_NAME/jenkins-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
   /shared/$PROJECT_NAME/jenkins-maven-repository 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
 
-  # exports 적용
+  # apply exports 
   exportfs -r
   ```
   2-2. Jenkins Install.
   ```shell
-  # [참고]Jenkins persistent openshift image 로 설치.
+  # [Ref.]Install Jenkins persistent from openshift image .
   # oc new-app jenkins-persistent -n $PROJECT_NAME
 
-  # Jenkins persistent template 으로 설치.
+  # Jenkins persistent template .
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
   oc new-app -f ./yaml/jenkins-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
@@ -102,21 +102,21 @@
 	
   ## 3. GOGS Installation(persistent)
 
-  3-1. [Manually] Gogs PersistentVolume 생성을 위한 준비작업 (gogs data , gogs postgresql)
-  - ※ gogs 설치 후 volume mount 실패시 directory nfsnobody:nfsnobody 로 owner 변경.
+  3-1. [Manually] Gogs PersistentVolume (gogs data , gogs postgresql)
+  - ※ gogs volume mount fail : directory owner nfsnobody:nfsnobody .
   
   ```shell
-  # data directory 생성.
+  # Create data directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-data
 
-  # postgresql directory 생성.
+  # Create postgresql directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/gogs-postgres-data
 
-  # /etc/exports 에 추가
+  # Add to /etc/exports
   /shared/$PROJECT_NAME/gogs-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
   /shared/$PROJECT_NAME/gogs-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
 
-  # exports 적용
+  # exports apply
   exportfs -r	
   ```
 
@@ -128,7 +128,7 @@
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
-  # GOGS persistent 설치.
+  # GOGS persistent template.
   oc new-app -f ./yaml/gogs-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=GOGS_VERSION=0.11.34 \
@@ -152,20 +152,20 @@
 
   ## 4. Sonarqube Installation(persistent)
 	
-  4-1. [Manually] Sonarqube PersistentVolume 생성을 위한 준비작업 (sonarqube data, sonarqube postgresql)
+  4-1. [Manually] Sonarqube PersistentVolume (sonarqube data, sonarqube postgresql)
   
   ```shell
-  # data directory 생성.
+  # Create data directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-data
 
-  # postgresql directory 생성.
+  # Create postgresql directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/sonarqube-postgres-data
 
-  # /etc/exports 에 추가
+  # Add to /etc/exports
   /shared/$PROJECT_NAME/sonarqube-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
   /shared/$PROJECT_NAME/sonarqube-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
 
-  # exports 적용
+  # exports apply
   exportfs -r	
   ```
 
@@ -174,7 +174,7 @@
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
-  # Sonarqube persistent 설치.
+  # Sonarqube persistent template.
   oc new-app -f ./yaml/sonarqube-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=SONARQUBE_MEMORY_LIMIT=2Gi \
@@ -195,17 +195,16 @@
 	
   ## 5. Nexus Installation(persistent)
 
-  5-1. [Manually] Nexus PersistentVolume 생성을 위한 준비작업 
-  - Nexus data 를 위한 1개의 PV 생성
+  5-1. [Manually] Nexus PersistentVolume (nexus data)
   
   ```shell
-  # data directory 생성.
+  # Create data directory.
   mkdir -m 777 -p /shared/$PROJECT_NAME/nexus-data
 
-  # /etc/exports 에 추가
+  # Add to /etc/exports 
   /shared/$PROJECT_NAME/nexus-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
 
-  # exports 적용
+  # exports apply
   exportfs -r
   ```
 
@@ -214,7 +213,7 @@
   # Get IP Address
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
-  # Nexus persistent 설치.
+  # Nexus persistent template.
   oc new-app -f ./yaml/nexus-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=NEXUS_DATA_DIRECTORY=/shared/$PROJECT_NAME/nexus-data  \
