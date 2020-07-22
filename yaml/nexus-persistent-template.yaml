@@ -111,7 +111,7 @@ objects:
             limits:
               memory: ${MAX_MEMORY}
             requests:
-              memory: 512Mi
+              memory: 1024Mi
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /nexus-data
@@ -184,7 +184,7 @@ parameters:
       displayName: Max Memory
       description: Max memory allocated to the Nexus pod
       required: true
-      value: 1Gi
+      value: 2Gi
     - name: NEXUS_DATA_DIRECTORY
       displayName: Nexus data directory
       description:  PersistentVolume for Sonarqube data directory
