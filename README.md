@@ -96,7 +96,10 @@
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/gogs-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
-  /shared/$PROJECT_NAME/gogs-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)	
+  /shared/$PROJECT_NAME/gogs-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
+
+  # exports 적용
+  exportfs -r	
   ```
 
   3-2. Gogs 설치.	
@@ -137,7 +140,10 @@
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/sonarqube-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
-  /shared/$PROJECT_NAME/sonarqube-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)	
+  /shared/$PROJECT_NAME/sonarqube-postgres-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
+
+  # exports 적용
+  exportfs -r	
   ```
 
   4-2. Sosnarqube 설치.	
@@ -170,6 +176,9 @@
 
   # /etc/exports 에 추가
   /shared/$PROJECT_NAME/nexus-data 192.168.138.0/24(rw,sync,no_wdelay,no_root_squash,insecure)
+
+  # exports 적용
+  exportfs -r
   ```
 
   5-2. Nexus 설치.	
