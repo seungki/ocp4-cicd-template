@@ -71,7 +71,7 @@
 
   # Jenkins persistent template 으로 설치.
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
-  oc new-app -f ../yaml/jenkins-persistent-template.yaml \
+  oc new-app -f ./yaml/jenkins-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME
     --param=JENKINS_DATA_DIRECTORY=/shared/$PROJECT_NAME/jenkins-data \
     --param=JENKINS_MAVEN_REPO=/shared/$PROJECT_NAME/jenkins-maven-repository \
@@ -103,7 +103,7 @@
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
   # GOGS persistent 설치.
-  oc new-app -f ../yaml/gogs-persistent-template.yaml \
+  oc new-app -f ./yaml/gogs-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=GOGS_VERSION=0.11.34 \
     --param=SKIP_TLS_VERIFY=true \
@@ -136,7 +136,7 @@
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
   # Sonarqube persistent 설치.
-  oc new-app -f ../yaml/sonarqube-persistent-template.yaml \
+  oc new-app -f ./yaml/sonarqube-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=SONARQUBE_MEMORY_LIMIT=2Gi \
     --param=SONAR_POSTGRESQL_DATA_DIRECTORY=/shared/$PROJECT_NAME/sonarqube-postgres-data \
@@ -164,7 +164,7 @@
   PERSISTENT_VOLUME_IP=$(hostname -I | awk '{print $1}')
 	
   # Nexus persistent 설치.
-  oc new-app -f ../yaml/nexus-persistent-template.yaml \
+  oc new-app -f ./yaml/nexus-persistent-template.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=NEXUS_DATA_DIRECTORY=/shared/$PROJECT_NAME/nexus-data  \
     --param=PERSISTENT_VOLUME_IP=$PERSISTENT_VOLUME_IP 
