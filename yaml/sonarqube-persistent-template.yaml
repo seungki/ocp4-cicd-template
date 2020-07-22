@@ -7,6 +7,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${SONAR_SERVICE_NAME}    
     name: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-postgres-data
   spec:
     capacity:
@@ -21,6 +23,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${SONAR_SERVICE_NAME}   
     name: ${PROJECT_NAME}-${SONAR_SERVICE_NAME}-data
   spec:
     capacity:
@@ -36,7 +40,7 @@ objects:
   apiVersion: v1
   metadata:
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
       template: postgresql-persistent-template
     name: sonar-postgres-data
   spec:
@@ -50,6 +54,8 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
+    labels:
+      app: ${SONAR_SERVICE_NAME}   
     name: sonarqube-data
   spec:
     accessModes:
@@ -64,7 +70,7 @@ objects:
   metadata:
     generation: 1
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
       template: postgresql-persistent-template
     name: sonardb
   spec:
@@ -166,7 +172,7 @@ objects:
   metadata:
     generation: 1
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
     name: sonarqube
   spec:
     replicas: 1
@@ -305,7 +311,7 @@ objects:
   apiVersion: v1
   metadata:
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
     name: sonarqube
   spec:
     tags:
@@ -326,7 +332,7 @@ objects:
     database-user: ${POSTGRES_USERNAME}
   metadata:
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
       template: postgresql-persistent-template
     name: sonardb
   type: Opaque
@@ -337,6 +343,8 @@ objects:
     password: ${SONAR_LDAP_BIND_PASSWORD}
     username: ${SONAR_LDAP_BIND_DN}
   metadata:
+    labels:
+      app: ${SONAR_SERVICE_NAME}   
     name: sonar-ldap-bind-dn
   type: kubernetes.io/basic-auth
 #Service Sonarqube Postgresql
@@ -346,7 +354,7 @@ objects:
     annotations:
       template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
       template: postgresql-persistent-template
     name: sonardb
   spec:
@@ -366,7 +374,7 @@ objects:
   apiVersion: v1
   metadata:
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
     name: sonarqube
   spec:
     ports:
@@ -385,7 +393,7 @@ objects:
   apiVersion: v1
   metadata:
     labels:
-      app: sonarqube
+      app: ${SONAR_SERVICE_NAME} 
     name: sonarqube
   spec:
     port:

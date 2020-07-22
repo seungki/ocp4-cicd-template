@@ -10,6 +10,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${GOGS_SERVICE_NAME}   
     name: ${PROJECT_NAME}-${GOGS_SERVICE_NAME}-postgres-data
   spec:
     capacity:
@@ -24,6 +26,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${GOGS_SERVICE_NAME}     
     name: ${PROJECT_NAME}-${GOGS_SERVICE_NAME}-data
   spec:
     capacity:
@@ -38,9 +42,9 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
-    name: ${GOGS_SERVICE_NAME}-postgres-data
     labels:
-      app: ${GOGS_SERVICE_NAME}
+      app: ${GOGS_SERVICE_NAME}  
+    name: ${GOGS_SERVICE_NAME}-postgres-data
   spec:
     accessModes:
       - ReadWriteOnce
@@ -52,9 +56,9 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
-    name: ${GOGS_SERVICE_NAME}-data
     labels:
-      app: ${GOGS_SERVICE_NAME}
+      app: ${GOGS_SERVICE_NAME}  
+    name: ${GOGS_SERVICE_NAME}-data
   spec:
     accessModes:
       - ReadWriteOnce
@@ -256,9 +260,9 @@ objects:
 - kind: ConfigMap
   apiVersion: v1
   metadata:
-    name: gogs-config
     labels:
-      app: ${GOGS_SERVICE_NAME}
+      app: ${GOGS_SERVICE_NAME}  
+    name: gogs-config
   data:
     app.ini: |
       RUN_MODE = prod

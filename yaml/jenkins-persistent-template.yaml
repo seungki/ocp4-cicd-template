@@ -10,6 +10,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}  
     name: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-data
   spec:
     capacity:
@@ -24,6 +26,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     name: ${PROJECT_NAME}-${JENKINS_SERVICE_NAME}-maven-repository
   spec:
     capacity:
@@ -38,6 +42,8 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     name: ${JENKINS_SERVICE_NAME}-data
   spec:
     accessModes:
@@ -50,6 +56,8 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     name: ${JENKINS_SERVICE_NAME}-maven-repository
   spec:
     accessModes:
@@ -62,6 +70,8 @@ objects:
 - kind: DeploymentConfig
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     annotations:
       template.alpha.openshift.io/wait-for-ready: 'true'
     name: "${JENKINS_SERVICE_NAME}"
@@ -153,6 +163,8 @@ objects:
 - kind: ServiceAccount
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     annotations:
       serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${JENKINS_SERVICE_NAME}"}}'
     name: "${JENKINS_SERVICE_NAME}"
@@ -161,6 +173,8 @@ objects:
   apiVersion: v1
   groupNames: 
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     name: "${JENKINS_SERVICE_NAME}_edit"
   roleRef:
     name: edit
@@ -171,6 +185,8 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     name: "${JNLP_SERVICE_NAME}"
   spec:
     ports:
@@ -187,6 +203,8 @@ objects:
 - kind: Service
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     annotations:
       service.alpha.openshift.io/dependencies: '[{"name": "${JNLP_SERVICE_NAME}",
         "namespace": "", "kind": "Service"}]'
@@ -207,6 +225,8 @@ objects:
 - kind: Route
   apiVersion: v1
   metadata:
+    labels:
+      app: ${JENKINS_SERVICE_NAME}    
     annotations:
       haproxy.router.openshift.io/timeout: 4m
       template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}

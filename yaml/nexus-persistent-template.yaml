@@ -10,6 +10,8 @@ objects:
 - kind: PersistentVolume
   apiVersion: v1
   metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}    
     name: ${PROJECT_NAME}-nexus-data
   spec:
     capacity:
@@ -24,6 +26,8 @@ objects:
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
+    labels:
+      app: ${NEXUS_SERVICE_NAME}  
     name: nexus-data
   spec:
     accessModes:
