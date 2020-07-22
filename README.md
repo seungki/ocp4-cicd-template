@@ -6,26 +6,38 @@
     <tbody>
     <tr>
         <td>Service</td>
-        <td>Version</td>  
+        <td>Version</td>
+        <td>Account</td>
     </tr>
     <tr>
         <td>Jenkins</td>
-        <td>2.204.2</td> 
+        <td>2.204.2</td>
+        <td>OpenShift credentials</td> 
     </tr>
     <tr>
         <td>Gogs</td>
         <td>0.11.34</td>
+        <td>gogs/gogs</td> 
     </tr>
     <tr>
         <td>Nexus</td>
         <td>3.25.0</td>
+        <td>admin/admin123</td> 
     </tr>
     <tr>
         <td>Sonarqube</td>
         <td>7.1.0</td>
+        <td>admin/admin</td> 
     </tr>        
     </tbody>
   </table>  
+ 
+  
+  ## 0. Prepare CI/CD template YAML file download
+  ```shell
+  # git clone
+  git clone https://github.com/seungki/ocp4-cicd-template.git
+  ```
 
   ## 1. CI/CD Project 생성
 	
@@ -218,3 +230,19 @@
   # delete pv
   oc delete pv $PROJECT_NAME-nexus-data
   ```
+
+	
+  ## 6. Set Jenkins pipeline
+  
+  6-1. Create new project for application
+  ```shell
+  DEV_PROJECT_NAME=app-test
+  oc new-project $DEV_PROJECT_NAME --display-name="Test Application"
+  oc project $DEV_PROJECT_NAME
+
+  
+  ```
+  6-2. clone simple application to GOGS
+  ![alt text](images/gogs-migration.png)
+  
+  6-3. 
