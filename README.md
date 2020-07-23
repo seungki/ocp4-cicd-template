@@ -303,6 +303,9 @@
   oc policy add-role-to-group edit system:serviceaccounts:$PROJECT_NAME -n $DEV_PROJECT_NAME
   ``` 
   
+  7-4. Jenkins Maven Repository[Optional]
+  > - Jenkins > Configuration : Cloud > Kurbernetes Pod Template[name=maven] > Add Volume[PVC]
+  > ![alt text](images/jenkins-maven-repository.png)
   
   ※ Jenkins pipeline Delete.
   ```shell
