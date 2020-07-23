@@ -100,6 +100,7 @@
   oc delete pv $PROJECT_NAME-jenkins-maven-repository
   ```
 	
+	
   ## 3. GOGS Installation(persistent)
 
   3-1. [Manually] Gogs PersistentVolume (gogs data , gogs postgresql)
@@ -150,6 +151,7 @@
   oc delete pv $PROJECT_NAME-gogs-postgres-data
   ```
 
+
   ## 4. Sonarqube Installation(persistent)
 	
   4-1. [Manually] Sonarqube PersistentVolume (sonarqube data, sonarqube postgresql)
@@ -193,6 +195,7 @@
   oc delete pv $PROJECT_NAME-sonarqube-postgres-data
   ```
 	
+	
   ## 5. Nexus Installation(persistent)
 
   5-1. [Manually] Nexus PersistentVolume (nexus data)
@@ -230,40 +233,23 @@
   oc delete pv $PROJECT_NAME-nexus-data
   ```
 
+
 	
-  ## 6. Set Jenkins pipeline
-  
-  6-1. Create Jenkins pipeline
+  ## 6. Create Sample Application	
+  6-1. Create new project for application
   ```shell
-  # Get HOSTNAME from Jenkins
-  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
-  GOGS_HOSTNAME="gogs-$PROJECT_NAME.$HOSTNAME"
-  # set dev application project name
-  DEV_PROJECT_NAME=test-cicd-app
-	
-  oc new-app -f ./yaml/jenkins-pipeline.yaml \
-    --param=PROJECT_NAME=$PROJECT_NAME \
-    --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
-    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME 	
-	
-  ```
-	
-  ## 7. Create Sample Application	
-  7-1. Create new project for application
-  ```shell
-  DEV_PROJECT_NAME=test-cicd-app
+  DEV_PROJECT_NAME=test-app
   oc new-project $DEV_PROJECT_NAME --display-name="Test Application for CI/CD"
   oc project $DEV_PROJECT_NAME
-  
   ```
 
-  7-2. Clone simple application to GOGS
+  6-2. Clone simple application to GOGS
   ![alt text](images/gogs-migration.png)
   
-  7-3. Create Sample Application
+  6-3. Create Sample Application
   ```shell
   # set dev application project name
-  DEV_PROJECT_NAME=test-cicd-app
+  DEV_PROJECT_NAME=test-app
   APP_NAME=simple-springboot
 	
   # create application & build & deployconfig
@@ -273,3 +259,20 @@
 	
   ```
 	
+	
+  ## 7. Set Jenkins pipeline
+  
+  7-1. Create Jenkins pipeline
+  ```shell
+  # Get HOSTNAME from Jenkins
+  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
+  GOGS_HOSTNAME="gogs-$PROJECT_NAME.$HOSTNAME"
+  # set dev application project name
+  DEV_PROJECT_NAME=test-app
+	
+  oc new-app -f ./yaml/jenkins-pipeline.yaml \
+    --param=PROJECT_NAME=$PROJECT_NAME \
+    --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
+    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME 	
+	
+  ```
