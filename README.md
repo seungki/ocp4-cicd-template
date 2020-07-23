@@ -284,7 +284,6 @@
 	
   oc new-app -f ./yaml/jenkins-pipeline.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
-    --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
     --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
     --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
   ```
