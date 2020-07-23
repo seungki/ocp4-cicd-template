@@ -263,7 +263,7 @@
     --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
 	
   ```
-  ※ Nexus Sample Application.
+  ※ Sample Application Delete.
   ```shell
   # check list
   oc get all --selector app=$APP_NAME
@@ -276,9 +276,9 @@
   
   7-1. Create Jenkins pipeline
   ```shell
-  # Get HOSTNAME from Jenkins
-  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
-  GOGS_HOSTNAME="gogs-$PROJECT_NAME.$HOSTNAME"
+  # Switch Project to ci/cd
+  PROJECT_NAME=cicd-test
+  oc peoject $PROJECT_NAME
   # set dev application project name
   DEV_PROJECT_NAME=test-app
 	
@@ -287,5 +287,12 @@
     --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
     --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
     --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
-	
+  ```
+
+  ※ Jenkins pipeline Delete.
+  ```shell
+  # check list
+  oc get all --selector app=cicd-pipeline
+  # delete all
+  oc delete all --selector app=cicd-pipeline
   ```

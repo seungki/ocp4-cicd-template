@@ -101,8 +101,8 @@ objects:
         <imagePullSecrets/>
       </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
 # Pipeline
-- apiVersion: v1
-  kind: BuildConfig
+- kind: BuildConfig
+  apiVersion: v1
   metadata:
     annotations:
       pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
