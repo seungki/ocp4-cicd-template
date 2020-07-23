@@ -282,7 +282,7 @@
   # set dev application project name
   DEV_PROJECT_NAME=test-app
 	
-  oc new-app -f ./yaml/jenkins-pipeline.yaml \
+  oc new-app -f ./yaml/jenkins-sample-pipeline.yaml \
     --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
     --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
   ```
