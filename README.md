@@ -251,12 +251,22 @@
   # set dev application project name
   DEV_PROJECT_NAME=test-app
   APP_NAME=simple-springboot
+  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
+  APP_HOSTNAME="$APP_NAME-$PROJECT_NAME.$HOSTNAME"
 	
   # create application & build & deployconfig
   oc new-app -f ./yaml/simple-springboot-template.yaml \
-    --param=PROJECT_NAME=$PROJECT_NAME \
-    --param=APP_NAME=$APP_NAME 	
+    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
+    --param=APP_NAME=$APP_NAME \
+		--param=APP_HOSTNAME=$APP_HOSTNAME
 	
+  ```
+  ※ Nexus Sample Application.
+  ```shell
+  # check list
+  oc get all --selector app=$APP_NAME
+  # delete all
+  oc delete all --selector app=$APP_NAME
   ```
 	
 	

@@ -10,7 +10,7 @@ objects:
   metadata:
     name: ${APP_NAME}
     labels:
-      application: ${APP_NAME}
+      app: ${APP_NAME}
   spec:
     strategy:
       type: Recreate
@@ -25,7 +25,7 @@ objects:
             - ${APP_NAME}
           from:
             kind: ImageStreamTag
-            namespace: ${PROJECT_NAME}
+            namespace: ${DEV_PROJECT_NAME}
             name: '${APP_NAME}:latest'
       - type: ConfigChange
     replicas: 1
@@ -74,7 +74,7 @@ objects:
   metadata:
     name: ${APP_NAME}
     labels:
-      application: ${APP_NAME}
+      app: ${APP_NAME}
   spec:
     nodeSelector: null
     output:
@@ -126,18 +126,22 @@ objects:
       app: ${APP_NAME}
     name: ${APP_NAME}
   spec:
-    host: ${APP_NAME}-${PROJECT_NAME}.apps.ocp4.northstar.co.kr
+    host: ${APP_HOSTNAME}
     to:
       kind: Service
       name: ${APP_NAME}
       weight: 100
     wildcardPolicy: None
 parameters:
-    - name: PROJECT_NAME
+    - name: DEV_PROJECT_NAME
       displayName: Project Name
       description:  Project Name 
       value: cicd-sample
     - name: APP_NAME
       displayName: Application Name
       description:  Application Name 
-      value: simple-springboot      
+      value: simple-springboot
+    - name: APP_HOSTNAME
+      displayName: Application host Name
+      description:  Application host Name 
+      value: simple-springboot.com         
