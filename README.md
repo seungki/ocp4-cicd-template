@@ -278,7 +278,7 @@
   ```shell
   # Switch Project to ci/cd
   PROJECT_NAME=cicd-test
-  oc peoject $PROJECT_NAME
+  oc project $PROJECT_NAME
   # set dev application project name
   DEV_PROJECT_NAME=test-app
 	
