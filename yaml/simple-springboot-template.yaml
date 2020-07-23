@@ -1,0 +1,143 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: ${APP_NAME}
+  annotations:
+objects:
+#DeploymentConfig
+- kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    name: ${APP_NAME}
+    labels:
+      application: ${APP_NAME}
+  spec:
+    strategy:
+      type: Recreate
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      activeDeadlineSeconds: 21600
+    triggers:
+      - type: ImageChange
+        imageChangeParams:
+          containerNames:
+            - ${APP_NAME}
+          from:
+            kind: ImageStreamTag
+            namespace: ${PROJECT_NAME}
+            name: '${APP_NAME}:latest'
+      - type: ConfigChange
+    replicas: 1
+    revisionHistoryLimit: 10
+    test: false
+    selector:
+      deploymentConfig: ${APP_NAME}
+    template:
+      metadata:
+        name: ${APP_NAME}
+        creationTimestamp: null
+        labels:
+          application: ${APP_NAME}
+          deploymentConfig: ${APP_NAME}
+      spec:
+        containers:
+          - resources: {}
+            terminationMessagePath: /dev/termination-log
+            name: ${APP_NAME}
+            env:
+              - name: JAVA_OPTIONS
+                value: '-Dspring.profiles.active=dev'
+              - name: APP_LOGGING_LEVEL
+                value: DEBUG
+            ports:
+              - name: jolokia
+                containerPort: 8778
+                protocol: TCP
+              - name: http
+                containerPort: 8080
+                protocol: TCP
+              - name: https
+                containerPort: 8443
+                protocol: TCP
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 75
+        dnsPolicy: ClusterFirst
+        securityContext:
+          supplementalGroups:
+            - 185
+        schedulerName: default-scheduler
+
+#BuildConfig ${APP_NAME}
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    name: ${APP_NAME}
+    labels:
+      application: ${APP_NAME}
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: '${APP_NAME}:latest'
+    resources: {}
+    successfulBuildsHistoryLimit: 5
+    failedBuildsHistoryLimit: 5
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: 'java:8'
+        forcePull: true
+    postCommit: {}
+    source:
+      type: Git
+      git:
+        uri: 'https://github.com/seungki/${APP_NAME}.git'
+        ref: master
+    triggers:
+      - type: ImageChange
+      - type: ConfigChange
+    runPolicy: Serial
+#Service
+- kind: Service
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+    selector:
+      deploymentconfig: ${APP_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+#Route
+- kind: Route
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    host: ${APP_NAME}-${PROJECT_NAME}.apps.ocp4.northstar.co.kr
+    to:
+      kind: Service
+      name: ${APP_NAME}
+      weight: 100
+    wildcardPolicy: None
+parameters:
+    - name: PROJECT_NAME
+      displayName: Project Name
+      description:  Project Name 
+      value: cicd-sample
+    - name: APP_NAME
+      displayName: Application Name
+      description:  Application Name 
+      value: simple-springboot      
