@@ -102,6 +102,17 @@ objects:
       - type: ImageChange
       - type: ConfigChange
     runPolicy: Serial
+#ImageStream
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    name: ${APP_NAME}
+    namespace: ${DEV_PROJECT_NAME}
+    labels:
+      app: ${APP_NAME}
+  spec:
+    lookupPolicy:
+      local: false
 #Service
 - kind: Service
   apiVersion: v1
