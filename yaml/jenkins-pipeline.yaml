@@ -8,7 +8,6 @@ metadata:
     iconClass: icon-jenkins
     tags: jenkins,cicd
   name: jenkins-pipeline
-  namespace: ${PROJECT_NAME}
 #RoleBinding  
 objects:
 - kind: RoleBinding
@@ -184,10 +183,6 @@ objects:
           }
       type: JenkinsPipeline
 parameters:
-    - name: PROJECT_NAME
-      displayName: Project Name
-      description:  Project Name 
-      value: cicd-sample 
     - name: DEV_PROJECT_NAME
       displayName: DEV App Project Name
       description: DEV App Project Name 
