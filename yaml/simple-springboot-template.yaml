@@ -96,7 +96,7 @@ objects:
     source:
       type: Git
       git:
-        uri: 'https://github.com/seungki/${APP_NAME}.git'
+        uri: '${GIT_REPOSITORY_URL}'
         ref: master
     triggers:
       - type: ImageChange
@@ -137,11 +137,15 @@ parameters:
       displayName: Project Name
       description:  Project Name 
       value: cicd-sample
+    - name: APP_HOSTNAME
+      displayName: Application host Name
+      description:  Application host Name 
+      value: simple-springboot.com       
     - name: APP_NAME
       displayName: Application Name
       description:  Application Name 
       value: simple-springboot
-    - name: APP_HOSTNAME
-      displayName: Application host Name
-      description:  Application host Name 
-      value: simple-springboot.com         
+    - name: GIT_REPOSITORY_URL
+      displayName: git repository url
+      description:  git repository url 
+      value: https://github.com/seungki/simple-springboot.git       

@@ -130,7 +130,7 @@ objects:
             stages {
               stage('Build App') {
                 steps {
-                  git branch: 'master', credentialsId: 'XXXXXXXX', url: 'http://${GOGS_HOSTNAME}/simple-springboot.git'
+                  git branch: 'master', credentialsId: 'XXXXXXXX', url: '${GIT_REPOSITORY_URL}'
                   sh "${mvnCmd} install -DskipTests=true"
                 }
               }
@@ -187,11 +187,12 @@ parameters:
     - name: PROJECT_NAME
       displayName: Project Name
       description:  Project Name 
-      value: cicd-sample
-    - name: GOGS_HOSTNAME
-      displayName: Gogs hostname
-      description:  Gogs hostname 
+      value: cicd-sample 
     - name: DEV_PROJECT_NAME
       displayName: DEV App Project Name
       description: DEV App Project Name 
-      value: test-cicd-app        
+      value: test-cicd-app
+    - name: GIT_REPOSITORY_URL
+      displayName: git repository url
+      description:  git repository url 
+      value: https://github.com/seungki/simple-springboot.git         

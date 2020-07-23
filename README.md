@@ -251,14 +251,16 @@
   # set dev application project name
   DEV_PROJECT_NAME=test-app
   APP_NAME=simple-springboot
-  HOSTNAME=$(oc get route jenkins -o template --template='{{.spec.host}}' | sed "s/jenkins-$PROJECT_NAME.//g")
-  APP_HOSTNAME="$APP_NAME-$PROJECT_NAME.$HOSTNAME"
+  # It must change HOSTNAME
+  #HOSTNAME=apps.ocp4.sample.com
+  APP_HOSTNAME="$APP_NAME-$DEV_PROJECT_NAME.$HOSTNAME"
 	
   # create application & build & deployconfig
   oc new-app -f ./yaml/simple-springboot-template.yaml \
     --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
     --param=APP_NAME=$APP_NAME \
-		--param=APP_HOSTNAME=$APP_HOSTNAME
+    --param=APP_HOSTNAME=$APP_HOSTNAME \
+    --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
 	
   ```
   ※ Nexus Sample Application.
@@ -283,6 +285,7 @@
   oc new-app -f ./yaml/jenkins-pipeline.yaml \
     --param=PROJECT_NAME=$PROJECT_NAME \
     --param=GOGS_HOSTNAME=$GOGS_HOSTNAME  \
-    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME 	
+    --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
+    --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
 	
   ```
