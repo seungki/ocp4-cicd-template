@@ -314,3 +314,8 @@
   # delete all
   oc delete all --selector app=cicd-pipeline
   ```
+
+
+  Finally.
+  > ![alt text](images/sample-app-build.png)
+  
