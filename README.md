@@ -286,7 +286,24 @@
     --param=DEV_PROJECT_NAME=$DEV_PROJECT_NAME \
     --param=GIT_REPOSITORY_URL=https://github.com/seungki/simple-springboot.git
   ```
-
+  7-2. Create jenkins credential
+  > sample pipeline 설치시 최소 build gogs Authentication failed 발생.
+  >
+  > - Jenkins > Credentials > Stores scoped to Jenkins > global : Add Credentials 클릭 후 gogs id/pw 입력
+  > ![alt text](images/jenkins-credentials.png)
+  > - 생성 후 생성된 ID 복사하여 sample-pipeline buildConfig 의 gogs credentialsId 에 입력
+  > ![alt text](images/jenkins-credentials-id.png)
+  > ![alt text](images/jenkins-credentials-id-update.png)
+  
+  7-3. Grant Jenkins 
+  ```shell
+  # Grant Jenkins Access to Projects
+  PROJECT_NAME=cicd-test
+  DEV_PROJECT_NAME=test-app
+  oc policy add-role-to-group edit system:serviceaccounts:$PROJECT_NAME -n $DEV_PROJECT_NAME
+  ``` 
+  
+  
   ※ Jenkins pipeline Delete.
   ```shell
   # check list
