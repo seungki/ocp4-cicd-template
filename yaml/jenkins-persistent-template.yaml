@@ -140,6 +140,9 @@ objects:
           volumeMounts:
           - mountPath: "/var/lib/jenkins"
             name: "${JENKINS_SERVICE_NAME}-data"
+          volumeMounts:
+            - mountPath: "/home/jenkins/.m2"
+              name: "${JENKINS_SERVICE_NAME}-maven-repository"
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         serviceAccountName: "${JENKINS_SERVICE_NAME}"
@@ -147,6 +150,9 @@ objects:
         - name: "${JENKINS_SERVICE_NAME}-data"
           persistentVolumeClaim:
             claimName: "${JENKINS_SERVICE_NAME}-data"
+        - name: "${JENKINS_SERVICE_NAME}-maven-repository"
+          persistentVolumeClaim:
+            claimName: "${JENKINS_SERVICE_NAME}-maven-repository"
     triggers:
     - imageChangeParams:
         automatic: true
