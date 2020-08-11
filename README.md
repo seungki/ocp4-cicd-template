@@ -21,7 +21,7 @@
     </tr>
     <tr>
         <td>Nexus</td>
-        <td>3.23.0</td>
+        <td>3.25.1</td>
         <td>admin/admin123</td> 
     </tr>
     <tr>
