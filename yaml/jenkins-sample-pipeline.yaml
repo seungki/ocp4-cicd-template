@@ -46,8 +46,8 @@ objects:
         </workspaceVolume>
         <volumes>
           <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
-		        <claimName>jenkins-maven-repository</claimName>
-		        <mountPath>/home/jenkins/.m2</mountPath>
+            <claimName>jenkins-maven-repository</claimName>
+            <mountPath>/home/jenkins/.m2</mountPath>
           </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
         </volumes>
         <containers>
@@ -67,7 +67,7 @@ objects:
             <envVars/>
           </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
         </containers>
-	      <envVars>
+        <envVars>
           <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
             <key>TZ</key>
             <value>Asia/Seoul</value>
