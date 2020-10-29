@@ -44,7 +44,12 @@ objects:
         <workspaceVolume class="org.csanchez.jenkins.plugins.kubernetes.volumes.workspace.EmptyDirWorkspaceVolume">
           <memory>false</memory>
         </workspaceVolume>
-        <volumes />
+        <volumes>
+          <org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+		        <claimName>jenkins-maven-repository</claimName>
+		        <mountPath>/home/jenkins/.m2</mountPath>
+          </org.csanchez.jenkins.plugins.kubernetes.volumes.PersistentVolumeClaim>
+        </volumes>
         <containers>
           <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
             <name>jnlp</name>
@@ -62,7 +67,12 @@ objects:
             <envVars/>
           </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
         </containers>
-        <envVars/>
+	      <envVars>
+          <org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+            <key>TZ</key>
+            <value>Asia/Seoul</value>
+          </org.csanchez.jenkins.plugins.kubernetes.model.KeyValueEnvVar>
+        </envVars>
         <annotations/>
         <imagePullSecrets/>
       </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
